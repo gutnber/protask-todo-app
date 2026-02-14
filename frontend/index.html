@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProTask - Todo App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 500px;
+            padding: 40px;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2rem;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 0.9rem;
+        }
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        #taskInput {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        #taskInput:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        #addBtn {
+            padding: 15px 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        #addBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        .stats span { font-weight: 600; color: #333; }
+        #taskList { list-style: none; }
+        .task-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            transition: all 0.3s;
+            animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .task-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+        .task-item.completed {
+            opacity: 0.6;
+        }
+        .task-item.completed .task-text {
+            text-decoration: line-through;
+            color: #999;
+        }
+        .checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #667eea;
+            border-radius: 50%;
+            margin-right: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        .checkbox:hover { background: rgba(102, 126, 234, 0.1); }
+        .checkbox.checked {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: transparent;
+        }
+        .checkbox.checked::after {
+            content: '✓';
+            color: white;
+            font-size: 14px;
+        }
+        .task-text {
+            flex: 1;
+            font-size: 1rem;
+            color: #333;
+        }
+        .delete-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            opacity: 0;
+            transition: all 0.3s;
+        }
+        .task-item:hover .delete-btn { opacity: 1; }
+        .delete-btn:hover { background: #ff5252; }
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+        .empty-state svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 15px;
+            opacity: 0.3;
+        }
+        .filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+        .filter-btn {
+            padding: 8px 16px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+        }
+        .filter-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+        }
+        .sync-status {
+            text-align: center;
+            padding: 10px;
+            font-size: 0.8rem;
+            color: #28a745;
+            margin-top: 15px;
+        }
+        .sync-status.syncing { color: #ffc107; }
+        .sync-status.error { color: #dc3545; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>✨ ProTask</h1>
+        <p class="subtitle">Organiza tu día, alcanza tus metas</p>
+        
+        <div class="input-group">
+            <input type="text" id="taskInput" placeholder="¿Qué necesitas hacer?" maxlength="100">
+            <button id="addBtn">Agregar</button>
+        </div>
+        
+        <div class="stats">
+            <div>Total: <span id="totalCount">0</span></div>
+            <div>Pendientes: <span id="pendingCount">0</span></div>
+            <div>Completadas: <span id="completedCount">0</span></div>
+        </div>
+        
+        <div class="filters">
+            <button class="filter-btn active" data-filter="all">Todas</button>
+            <button class="filter-btn" data-filter="pending">Pendientes</button>
+            <button class="filter-btn" data-filter="completed">Completadas</button>
+        </div>
+        
+        <ul id="taskList"></ul>
+        
+        <div class="sync-status" id="syncStatus">✓ Sincronizado con Inforge</div>
+    </div>
+
+    <script>
+        // State
+        let tasks = [];
+        let currentFilter = 'all';
+        
+        // API Config (Inforge backend)
+        const API_URL = 'https://api.inforge.gutnber.com/tasks';
+        const API_KEY = 'YOUR_INFORGE_API_KEY';
+        
+        // DOM Elements
+        const taskInput = document.getElementById('taskInput');
+        const addBtn = document.getElementById('addBtn');
+        const taskList = document.getElementById('taskList');
+        const totalCount = document.getElementById('totalCount');
+        const pendingCount = document.getElementById('pendingCount');
+        const completedCount = document.getElementById('completedCount');
+        const syncStatus = document.getElementById('syncStatus');
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadTasks();
+            setupEventListeners();
+        });
+        
+        function setupEventListeners() {
+            addBtn.addEventListener('click', addTask);
+            taskInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') addTask();
+            });
+            
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentFilter = btn.dataset.filter;
+                    renderTasks();
+                });
+            });
+        }
+        
+        async function loadTasks() {
+            try {
+                setSyncStatus('syncing');
+                // Simulado - conectar con Inforge
+                // const response = await fetch(API_URL, { headers: { 'Authorization': API_KEY } });
+                // tasks = await response.json();
+                
+                // Demo data
+                tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+                renderTasks();
+                setSyncStatus('synced');
+            } catch (error) {
+                console.error('Error loading tasks:', error);
+                setSyncStatus('error');
+            }
+        }
+        
+        async function addTask() {
+            const text = taskInput.value.trim();
+            if (!text) return;
+            
+            const task = {
+                id: Date.now().toString(),
+                text: text,
+                completed: false,
+                createdAt: new Date().toISOString()
+            };
+            
+            tasks.unshift(task);
+            taskInput.value = '';
+            
+            await saveTasks();
+            renderTasks();
+        }
+        
+        async function toggleTask(id) {
+            const task = tasks.find(t => t.id === id);
+            if (task) {
+                task.completed = !task.completed;
+                await saveTasks();
+                renderTasks();
+            }
+        }
+        
+        async function deleteTask(id) {
+            tasks = tasks.filter(t => t.id !== id);
+            await saveTasks();
+            renderTasks();
+        }
+        
+        async function saveTasks() {
+            try {
+                setSyncStatus('syncing');
+                // Simulado - guardar en localStorage
+                // En producción: await fetch(API_URL, { method: 'POST', body: JSON.stringify(tasks), headers... });
+                localStorage.setItem('tasks', JSON.stringify(tasks));
+                setSyncStatus('synced');
+            } catch (error) {
+                console.error('Error saving:', error);
+                setSyncStatus('error');
+            }
+        }
+        
+        function renderTasks() {
+            let filteredTasks = tasks;
+            if (currentFilter === 'pending') {
+                filteredTasks = tasks.filter(t => !t.completed);
+            } else if (currentFilter === 'completed') {
+                filteredTasks = tasks.filter(t => t.completed);
+            }
+            
+            if (filteredTasks.length === 0) {
+                taskList.innerHTML = `
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 11l3 3L22 4"/>
+                            <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+                        </svg>
+                        <p>${currentFilter === 'completed' ? 'No hay tareas completadas' : 'No hay tareas pendientes'}</p>
+                    </div>
+                `;
+            } else {
+                taskList.innerHTML = filteredTasks.map(task => `
+                    <li class="task-item ${task.completed ? 'completed' : ''}">
+                        <div class="checkbox ${task.completed ? 'checked' : ''}" onclick="toggleTask('${task.id}')"></div>
+                        <span class="task-text">${escapeHtml(task.text)}</span>
+                        <button class="delete-btn" onclick="deleteTask('${task.id}')">Eliminar</button>
+                    </li>
+                `).join('');
+            }
+            
+            updateStats();
+        }
+        
+        function updateStats() {
+            totalCount.textContent = tasks.length;
+            pendingCount.textContent = tasks.filter(t => !t.completed).length;
+            completedCount.textContent = tasks.filter(t => t.completed).length;
+        }
+        
+        function setSyncStatus(status) {
+            const messages = {
+                synced: '✓ Sincronizado con Inforge',
+                syncing: '⟳ Sincronizando...',
+                error: '✗ Error de sincronización'
+            };
+            syncStatus.textContent = messages[status];
+            syncStatus.className = 'sync-status ' + status;
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html>
