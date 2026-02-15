@@ -1,425 +1,559 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ProTask - Todo App</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>ProTask - Gestión Unificada</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --bg-hover: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border: #334155;
+        }
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--bg-dark);
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+            color: var(--text-primary);
         }
-        .container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            width: 100%;
-            max-width: 500px;
-            padding: 40px;
-        }
-        h1 {
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 2rem;
-        }
-        .subtitle {
-            color: #666;
-            margin-bottom: 30px;
-            font-size: 0.9rem;
-        }
-        .input-group {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        #taskInput {
-            flex: 1;
-            padding: 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
-            font-size: 1rem;
-            transition: border-color 0.3s;
-        }
-        #taskInput:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-        #addBtn {
-            padding: 15px 25px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        #addBtn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
-        }
-        .stats {
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        header {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 20px;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            font-size: 0.9rem;
-            color: #666;
-        }
-        .stats span { font-weight: 600; color: #333; }
-        #taskList { list-style: none; }
-        .task-item {
-            display: flex;
             align-items: center;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 12px;
-            margin-bottom: 10px;
-            transition: all 0.3s;
-            animation: slideIn 0.3s ease;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 30px;
         }
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .task-item:hover {
-            background: #e9ecef;
-            transform: translateX(5px);
-        }
-        .task-item.completed {
-            opacity: 0.6;
-        }
-        .task-item.completed .task-text {
-            text-decoration: line-through;
-            color: #999;
-        }
-        .checkbox {
-            width: 24px;
-            height: 24px;
-            border: 2px solid #667eea;
-            border-radius: 50%;
-            margin-right: 15px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
-        }
-        .checkbox:hover { background: rgba(102, 126, 234, 0.1); }
-        .checkbox.checked {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-color: transparent;
-        }
-        .checkbox.checked::after {
-            content: '✓';
-            color: white;
-            font-size: 14px;
-        }
-        .task-text {
-            flex: 1;
-            font-size: 1rem;
-            color: #333;
-        }
-        .delete-btn {
-            background: #ff6b6b;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            opacity: 0;
-            transition: all 0.3s;
-        }
-        .task-item:hover .delete-btn { opacity: 1; }
-        .delete-btn:hover { background: #ff5252; }
-        .empty-state {
-            text-align: center;
-            padding: 40px;
-            color: #999;
-        }
-        .empty-state svg {
-            width: 80px;
-            height: 80px;
-            margin-bottom: 15px;
-            opacity: 0.3;
-        }
-        .filters {
+        .logo { display: flex; align-items: center; gap: 15px; }
+        .logo i { font-size: 2.5rem; color: var(--primary); }
+        h1 { font-size: 2rem; font-weight: 700; }
+        .view-toggle {
             display: flex;
             gap: 10px;
-            margin-bottom: 20px;
-            justify-content: center;
+            background: var(--bg-card);
+            padding: 5px;
+            border-radius: 10px;
         }
-        .filter-btn {
-            padding: 8px 16px;
-            border: 2px solid #e0e0e0;
-            background: white;
-            border-radius: 20px;
+        .view-btn {
+            padding: 10px 20px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
             cursor: pointer;
-            font-size: 0.85rem;
+            border-radius: 8px;
             transition: all 0.3s;
         }
-        .filter-btn.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .view-btn.active {
+            background: var(--primary);
             color: white;
-            border-color: transparent;
         }
-        .sync-status {
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-item {
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: 15px;
             text-align: center;
-            padding: 10px;
-            font-size: 0.8rem;
-            color: #28a745;
-            margin-top: 15px;
+            border: 1px solid var(--border);
         }
-        .sync-status.syncing { color: #ffc107; }
-        .sync-status.error { color: #dc3545; }
+        .stat-value { font-size: 2.5rem; font-weight: 700; margin-bottom: 5px; }
+        .stat-label { color: var(--text-secondary); font-size: 0.9rem; }
+        .stat-pending .stat-value { color: var(--warning); }
+        .stat-progress .stat-value { color: var(--info); }
+        .stat-completed .stat-value { color: var(--success); }
+        .stat-total .stat-value { color: var(--primary); }
+        
+        /* KANBAN VIEW */
+        .kanban-board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .kanban-column {
+            background: var(--bg-card);
+            border-radius: 15px;
+            padding: 20px;
+            min-height: 500px;
+            border: 1px solid var(--border);
+        }
+        .column-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--border);
+        }
+        .column-title {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .column-count {
+            background: var(--bg-dark);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        .column-pending .column-title { color: var(--warning); }
+        .column-progress .column-title { color: var(--info); }
+        .column-completed .column-title { color: var(--success); }
+        
+        .kanban-card {
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            cursor: grab;
+            transition: all 0.3s;
+        }
+        .kanban-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+        .kanban-card.dragging { opacity: 0.5; }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 10px;
+        }
+        .card-title {
+            font-weight: 600;
+            font-size: 1rem;
+            line-height: 1.4;
+        }
+        .card-priority {
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .priority-high { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+        .priority-medium { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+        .priority-low { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+        .card-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 10px;
+        }
+        .card-meta i { margin-right: 5px; }
+        .card-assignee {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 3px 8px;
+            background: rgba(99, 102, 241, 0.2);
+            color: var(--primary);
+            border-radius: 12px;
+            font-size: 0.75rem;
+            margin-top: 10px;
+        }
+        
+        /* ADD TASK FORM */
+        .add-task-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+            transition: all 0.3s;
+        }
+        .add-task-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 30px rgba(99, 102, 241, 0.6);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+            border: 1px solid var(--border);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .modal-title { font-size: 1.5rem; font-weight: 600; }
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 15px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-primary);
+            margin-bottom: 15px;
+            font-family: inherit;
+        }
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .btn {
+            padding: 15px 30px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            width: 100%;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+        }
+        
+        .sync-indicator {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            padding: 12px 20px;
+            background: var(--bg-card);
+            border-radius: 25px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border: 1px solid var(--border);
+        }
+        .sync-indicator.synced { color: var(--success); }
+        .sync-indicator.syncing { color: var(--warning); }
+        .sync-indicator.error { color: var(--danger); }
+        
+        @media (max-width: 968px) {
+            .kanban-board { grid-template-columns: 1fr; }
+            .stats-bar { grid-template-columns: repeat(2, 1fr); }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>✨ ProTask</h1>
-        <p class="subtitle">Organiza tu día, alcanza tus metas</p>
-        
-        <div class="input-group">
-            <input type="text" id="taskInput" placeholder="¿Qué necesitas hacer?" maxlength="100">
-            <button id="addBtn">Agregar</button>
+        <header>
+            <div class="logo">
+                <i class="fas fa-tasks"></i>
+                <div>
+                    <h1>ProTask</h1>
+                    <small style="color: var(--text-secondary);">Gestión Unificada</small>
+                </div>
+            </div>
+            <div class="view-toggle">
+                <button class="view-btn active" onclick="setView('kanban')">
+                    <i class="fas fa-columns"></i> Kanban
+                </button>
+                <button class="view-btn" onclick="setView('list')">
+                    <i class="fas fa-list"></i> Lista
+                </button>
+            </div>
+        </header>
+
+        <div class="stats-bar">
+            <div class="stat-item stat-pending">
+                <div class="stat-value" id="pendingCount">0</div>
+                <div class="stat-label">Pendientes</div>
+            </div>
+            <div class="stat-item stat-progress">
+                <div class="stat-value" id="progressCount">0</div>
+                <div class="stat-label">En Progreso</div>
+            </div>
+            <div class="stat-item stat-completed">
+                <div class="stat-value" id="completedCount">0</div>
+                <div class="stat-label">Completadas</div>
+            </div>
+            <div class="stat-item stat-total">
+                <div class="stat-value" id="totalCount">0</div>
+                <div class="stat-label">Total</div>
+            </div>
         </div>
-        
-        <div class="stats">
-            <div>Total: <span id="totalCount">0</span></div>
-            <div>Pendientes: <span id="pendingCount">0</span></div>
-            <div>Completadas: <span id="completedCount">0</span></div>
+
+        <div class="kanban-board">
+            <div class="kanban-column column-pending" id="col-pending">
+                <div class="column-header">
+                    <span class="column-title">
+                        <i class="fas fa-clock"></i> Pendientes
+                    </span>
+                    <span class="column-count" id="count-pending">0</span>
+                </div>
+                <div class="column-content" id="list-pending"></div>
+            </div>
+            
+            <div class="kanban-column column-progress" id="col-progress">
+                <div class="column-header">
+                    <span class="column-title">
+                        <i class="fas fa-spinner"></i> En Progreso
+                    </span>
+                    <span class="column-count" id="count-progress">0</span>
+                </div>
+                <div class="column-content" id="list-progress"></div>
+            </div>
+            
+            <div class="kanban-column column-completed" id="col-completed">
+                <div class="column-header">
+                    <span class="column-title">
+                        <i class="fas fa-check-circle"></i> Completadas
+                    </span>
+                    <span class="column-count" id="count-completed">0</span>
+                </div>
+                <div class="column-content" id="list-completed"></div>
+            </div>
         </div>
-        
-        <div class="filters">
-            <button class="filter-btn active" data-filter="all">Todas</button>
-            <button class="filter-btn" data-filter="pending">Pendientes</button>
-            <button class="filter-btn" data-filter="completed">Completadas</button>
-        </div>
-        
-        <ul id="taskList"></ul>
-        
-        <div class="sync-status" id="syncStatus">✓ Sincronizado con Inforge</div>
     </div>
 
-    <script>
-        // State
+    <button class="add-task-btn" onclick="openModal()">
+        <i class="fas fa-plus"></i>
+    </button>
+
+    <div class="modal" id="taskModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Nueva Tarea</h3>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <form id="taskForm">
+                <input type="text" id="taskTitle" placeholder="Título de la tarea" required>
+                <textarea id="taskDescription" placeholder="Descripción detallada..." rows="3"></textarea>
+                <div class="form-row">
+                    <select id="taskPriority">
+                        <option value="high">Alta Prioridad</option>
+                        <option value="medium" selected>Media Prioridad</option>
+                        <option value="low">Baja Prioridad</option>
+                    </select>
+                    <select id="taskAssignee">
+                        <option value="me" selected>Para Mí</option>
+                        <option value="gene">Para Genee 🤖</option>
+                    </select>
+                </div>
+                <input type="date" id="taskDeadline" placeholder="Fecha límite">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Crear Tarea
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="sync-indicator synced" id="syncStatus">
+        <i class="fas fa-check-circle"></i>
+        <span>Sincronizado</span>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js';
+        import { getFirestore, collection, onSnapshot, addDoc, doc, updateDoc, deleteDoc, query, orderBy } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyASHwbzH0SGzzXsDicXKVGNsIBessMufUc",
+            authDomain: "nano-banana-pro.firebaseapp.com",
+            projectId: "nano-banana-pro",
+            storageBucket: "nano-banana-pro.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "1:123456789:web:abcdef"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const tasksCollection = collection(db, 'protasks');
+
         let tasks = [];
-        let currentFilter = 'all';
-        
-        // API Config (Inforge backend)
-        const API_URL = 'https://y3jed7qb.us-west.insforge.app/api/tasks';
-        const API_KEY = 'ik_e9e6dfc89c2b2fdcff23a652ad0e6f7a';
-        
-        // DOM Elements
-        const taskInput = document.getElementById('taskInput');
-        const addBtn = document.getElementById('addBtn');
-        const taskList = document.getElementById('taskList');
-        const totalCount = document.getElementById('totalCount');
-        const pendingCount = document.getElementById('pendingCount');
-        const completedCount = document.getElementById('completedCount');
-        const syncStatus = document.getElementById('syncStatus');
-        
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            loadTasks();
-            setupEventListeners();
-        });
-        
-        function setupEventListeners() {
-            addBtn.addEventListener('click', addTask);
-            taskInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') addTask();
-            });
-            
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    currentFilter = btn.dataset.filter;
-                    renderTasks();
-                });
+        let currentView = 'kanban';
+
+        window.setView = (view) => {
+            currentView = view;
+            document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            renderTasks();
+        };
+
+        window.openModal = () => {
+            document.getElementById('taskModal').classList.add('active');
+        };
+
+        window.closeModal = () => {
+            document.getElementById('taskModal').classList.remove('active');
+        };
+
+        function loadTasks() {
+            setSyncStatus('syncing');
+            const q = query(tasksCollection, orderBy('createdAt', 'desc'));
+            onSnapshot(q, (snapshot) => {
+                tasks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderTasks();
+                setSyncStatus('synced');
+            }, (error) => {
+                console.error('Error:', error);
+                setSyncStatus('error');
             });
         }
-        
-        async function loadTasks() {
-            try {
-                setSyncStatus('syncing');
-                const response = await fetch(API_URL, { 
-                    headers: { 'Authorization': 'Bearer ' + API_KEY } 
-                });
-                if (!response.ok) throw new Error('API Error');
-                const data = await response.json();
-                tasks = data.data || [];
-                renderTasks();
-                setSyncStatus('synced');
-            } catch (error) {
-                console.error('Error loading tasks:', error);
-                // Fallback to localStorage
-                tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
-                renderTasks();
-                setSyncStatus('error');
-            }
-        }
-        
-        async function addTask() {
-            const text = taskInput.value.trim();
-            if (!text) return;
-            
-            try {
-                setSyncStatus('syncing');
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + API_KEY 
-                    },
-                    body: JSON.stringify({ text: text, completed: false })
-                });
-                
-                if (!response.ok) throw new Error('API Error');
-                
-                const result = await response.json();
-                if (result.success && result.data) {
-                    tasks.unshift(result.data);
-                    taskInput.value = '';
-                    renderTasks();
-                    setSyncStatus('synced');
-                }
-            } catch (error) {
-                console.error('Error adding task:', error);
-                // Fallback: add locally
-                const task = {
-                    id: Date.now().toString(),
-                    text: text,
-                    completed: false,
-                    createdAt: new Date().toISOString()
-                };
-                tasks.unshift(task);
-                taskInput.value = '';
-                localStorage.setItem('tasks', JSON.stringify(tasks));
-                renderTasks();
-                setSyncStatus('error');
-            }
-        }
-        
-        async function toggleTask(id) {
-            try {
-                setSyncStatus('syncing');
-                const response = await fetch(API_URL + '/' + id + '/toggle', {
-                    method: 'PATCH',
-                    headers: { 'Authorization': 'Bearer ' + API_KEY }
-                });
-                
-                if (!response.ok) throw new Error('API Error');
-                
-                const result = await response.json();
-                if (result.success) {
-                    const task = tasks.find(t => t.id === id);
-                    if (task) {
-                        task.completed = !task.completed;
-                    }
-                }
-                renderTasks();
-                setSyncStatus('synced');
-            } catch (error) {
-                console.error('Error toggling task:', error);
-                // Fallback: toggle locally
-                const task = tasks.find(t => t.id === id);
-                if (task) {
-                    task.completed = !task.completed;
-                    localStorage.setItem('tasks', JSON.stringify(tasks));
-                }
-                renderTasks();
-                setSyncStatus('error');
-            }
-        }
-        
-        async function deleteTask(id) {
-            try {
-                setSyncStatus('syncing');
-                const response = await fetch(API_URL + '/' + id, {
-                    method: 'DELETE',
-                    headers: { 'Authorization': 'Bearer ' + API_KEY }
-                });
-                
-                if (!response.ok) throw new Error('API Error');
-                
-                tasks = tasks.filter(t => t.id !== id);
-                renderTasks();
-                setSyncStatus('synced');
-            } catch (error) {
-                console.error('Error deleting task:', error);
-                // Fallback: delete locally
-                tasks = tasks.filter(t => t.id !== id);
-                localStorage.setItem('tasks', JSON.stringify(tasks));
-                renderTasks();
-                setSyncStatus('error');
-            }
-        }
-        
-        function renderTasks() {
-            let filteredTasks = tasks;
-            if (currentFilter === 'pending') {
-                filteredTasks = tasks.filter(t => !t.completed);
-            } else if (currentFilter === 'completed') {
-                filteredTasks = tasks.filter(t => t.completed);
-            }
-            
-            if (filteredTasks.length === 0) {
-                taskList.innerHTML = `
-                    <div class="empty-state">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M9 11l3 3L22 4"/>
-                            <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
-                        </svg>
-                        <p>${currentFilter === 'completed' ? 'No hay tareas completadas' : 'No hay tareas pendientes'}</p>
-                    </div>
-                `;
-            } else {
-                taskList.innerHTML = filteredTasks.map(task => `
-                    <li class="task-item ${task.completed ? 'completed' : ''}">
-                        <div class="checkbox ${task.completed ? 'checked' : ''}" onclick="toggleTask('${task.id}')"></div>
-                        <span class="task-text">${escapeHtml(task.text)}</span>
-                        <button class="delete-btn" onclick="deleteTask('${task.id}')">Eliminar</button>
-                    </li>
-                `).join('');
-            }
-            
-            updateStats();
-        }
-        
-        function updateStats() {
-            totalCount.textContent = tasks.length;
-            pendingCount.textContent = tasks.filter(t => !t.completed).length;
-            completedCount.textContent = tasks.filter(t => t.completed).length;
-        }
-        
-        function setSyncStatus(status) {
-            const messages = {
-                synced: '✓ Sincronizado con Inforge',
-                syncing: '⟳ Sincronizando...',
-                error: '✗ Error de sincronización'
+
+        document.getElementById('taskForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const taskData = {
+                title: document.getElementById('taskTitle').value,
+                description: document.getElementById('taskDescription').value,
+                priority: document.getElementById('taskPriority').value,
+                assignee: document.getElementById('taskAssignee').value,
+                deadline: document.getElementById('taskDeadline').value || null,
+                status: 'pending',
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
             };
-            syncStatus.textContent = messages[status];
-            syncStatus.className = 'sync-status ' + status;
+            try {
+                await addDoc(tasksCollection, taskData);
+                document.getElementById('taskForm').reset();
+                closeModal();
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        });
+
+        window.moveTask = async (taskId, newStatus) => {
+            try {
+                await updateDoc(doc(db, 'protasks', taskId), { 
+                    status: newStatus, 
+                    updatedAt: new Date().toISOString() 
+                });
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        };
+
+        window.deleteTask = async (taskId) => {
+            if (confirm('¿Eliminar esta tarea?')) {
+                try {
+                    await deleteDoc(doc(db, 'protasks', taskId));
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            }
+        };
+
+        function renderTasks() {
+            const pending = tasks.filter(t => t.status === 'pending');
+            const progress = tasks.filter(t => t.status === 'progress');
+            const completed = tasks.filter(t => t.status === 'completed');
+
+            document.getElementById('list-pending').innerHTML = pending.map(task => renderCard(task)).join('');
+            document.getElementById('list-progress').innerHTML = progress.map(task => renderCard(task)).join('');
+            document.getElementById('list-completed').innerHTML = completed.map(task => renderCard(task)).join('');
+
+            document.getElementById('count-pending').textContent = pending.length;
+            document.getElementById('count-progress').textContent = progress.length;
+            document.getElementById('count-completed').textContent = completed.length;
+
+            document.getElementById('pendingCount').textContent = pending.length;
+            document.getElementById('progressCount').textContent = progress.length;
+            document.getElementById('completedCount').textContent = completed.length;
+            document.getElementById('totalCount').textContent = tasks.length;
         }
-        
+
+        function renderCard(task) {
+            const assigneeIcon = task.assignee === 'gene' ? '🤖' : '👤';
+            const assigneeName = task.assignee === 'gene' ? 'Genee' : 'Tú';
+            
+            let actions = '';
+            if (task.status === 'pending') {
+                actions = `<button onclick="moveTask('${task.id}', 'progress')" style="background:rgba(59,130,246,0.2);color:#3b82f6;border:1px solid #3b82f6;padding:5px 10px;border-radius:5px;cursor:pointer;font-size:0.8rem;"><i class="fas fa-play"></i> Iniciar</button>`;
+            } else if (task.status === 'progress') {
+                actions = `<button onclick="moveTask('${task.id}', 'completed')" style="background:rgba(16,185,129,0.2);color:#10b981;border:1px solid #10b981;padding:5px 10px;border-radius:5px;cursor:pointer;font-size:0.8rem;"><i class="fas fa-check"></i> Completar</button>`;
+            }
+            
+            return `
+                <div class="kanban-card" draggable="true" data-id="${task.id}">
+                    <div class="card-header">
+                        <span class="card-title">${escapeHtml(task.title)}</span>
+                        <span class="card-priority priority-${task.priority}">${task.priority}</span>
+                    </div>
+                    ${task.description ? `<p style="color:var(--text-secondary);font-size:0.9rem;margin-bottom:10px;">${escapeHtml(task.description)}</p>` : ''}
+                    <div class="card-assignee">${assigneeIcon} ${assigneeName}</div>
+                    <div class="card-meta">
+                        ${task.deadline ? `<span><i class="fas fa-calendar"></i> ${new Date(task.deadline).toLocaleDateString()}</span>` : ''}
+                        <span><i class="fas fa-clock"></i> ${new Date(task.createdAt).toLocaleDateString()}</span>
+                    </div>
+                    <div style="margin-top:10px;display:flex;gap:10px;">
+                        ${actions}
+                        <button onclick="deleteTask('${task.id}')" style="background:rgba(239,68,68,0.2);color:#ef4444;border:1px solid #ef4444;padding:5px 10px;border-radius:5px;cursor:pointer;font-size:0.8rem;"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function setSyncStatus(status) {
+            const el = document.getElementById('syncStatus');
+            el.className = 'sync-indicator ' + status;
+            const icons = { synced: 'check-circle', syncing: 'spinner fa-spin', error: 'exclamation-circle' };
+            const texts = { synced: 'Sincronizado', syncing: 'Sincronizando...', error: 'Error' };
+            el.innerHTML = `<i class="fas fa-${icons[status]}"></i> <span>${texts[status]}</span>`;
+        }
+
         function escapeHtml(text) {
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
         }
+
+        loadTasks();
     </script>
 </body>
 </html>
